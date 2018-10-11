@@ -187,7 +187,7 @@ def children_states(current):
     return [nparray_to_list(apply(list_to_nparray(current), move)) for move in valid_moves(list_to_nparray(current))]
     
 
-def a_star_search(problem, goal):
+def bfs_search(problem, goal):
     frontier = Queue()
     frontier.put(problem)
     explored = []
@@ -209,7 +209,7 @@ def build(matrix, target):
     """Find the path and return result"""
     initial = nparray_to_list(matrix)
     goal = nparray_to_list(target)
-    result = a_star_search(initial, goal)
+    result = bfs_search(initial, goal)
     return result
             
         
