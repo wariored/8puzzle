@@ -158,20 +158,6 @@ def apply(state, move):
     return new_state
 
 
-class Queue:
-    """LIFO Queue"""
-    def __init__(self):
-        self.visits = deque()
-    def put(self, value):
-        self.visits.append(value)
-    def get_all(self):
-        return list(self.visits)
-    def get(self):
-        return self.visits.pop()
-    def empty(self):
-        return len(self.visits) == 0
-
-
 def list_to_nparray(arr):
     return np.array([[arr[0], arr[1], arr[2]],
                      [arr[3], arr[4], arr[5]],
@@ -180,7 +166,21 @@ def list_to_nparray(arr):
 
 
 def nparray_to_list(nparray):
-    return [i[j] for i in nparray for j in range(len(i))] 
+    return [i[j] for i in nparray for j in range(len(i))]
+
+
+class Queue:
+    """FIFO Queue"""
+    def __init__(self):
+        self.visits = deque()
+    def put(self, value):
+        self.visits.append(value)
+    def get_all(self):
+        return list(self.visits)
+    def get(self):
+        return self.visits.popleft()
+    def empty(self):
+        return len(self.visits) == 0
 
 
 def children_states(current):
@@ -188,21 +188,23 @@ def children_states(current):
     
 
 def bfs_search(problem, goal):
-    frontier = Queue()
-    frontier.put(problem)
-    explored = []
+    frontiers = Queue()
+    frontiers.put(problem)
+    explored=[]
+    if problem == goal:
+        return goal
     while True:
-        if frontier.empty():
+        if frontiers.empty():
             return []
-        current = frontier.get()
-        new_states = children_states(current)
-        in_next = goal in new_states
-        if current == goal or in_next:
-            return list_to_nparray(goal)
-        explored.append(current)
-        for new_state in new_states:
-            if new_state not in explored:
-                frontier.put(new_state)
+        current = frontiers.get()
+        if current not in explored:
+            explored.append(current)
+            children = children_states(current)
+            for child in children:
+                if child == goal:
+                    return child
+                if child not in explored and child not in frontiers.get_all():
+                    frontiers.put(child)
 
 
 def build(matrix, target):
